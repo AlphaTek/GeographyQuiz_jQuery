@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="themes/geoQuizTheme.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+
+    <link href="css/main.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+
+    <script src="js/main.js"></script>
+
+    <title>Geography Quiz</title>
+    <script id="trueFalse-template" type="text/x-handlebars-template">
+        {{#each TF}}
+        <div class="ui-body ui-body-a ui-corner-all quiz-question-box">
+            <h3 class="questionName">Question&nbsp;<span class="questionNumber"></span></h3>
+            <p class="questionString">{{text}}</p>
+            <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                <input type="radio" name="tf-question-{{@index}}" id="tf-question-{{@index}}-true" value="true">
+                <label for="tf-question-{{@index}}-true">True</label>
+                <input type="radio" name="tf-question-{{@index}}" id="tf-question-{{@index}}-false" value="false">
+                <label for="tf-question-{{@index}}-false">False</label>
+            </fieldset>
+        </div>
+        {{/each}}
+    </script>
+    <script id="mcq-template" type="text/x-handlebars-template">
+        {{#each MCQ}}
+        <div class="ui-body ui-body-a ui-corner-all quiz-question-box">
+            <h3 class="questionName">Question&nbsp;<span class="questionNumber"></span></h3>
+            <p class="questionString">{{text}}</p>
+            <fieldset data-role="controlgroup" data-mini="true">
+                {{#each choices}}
+                <input type="radio" name="mcq-question-{{@../index}}" id="mcq-question-{{@../index}}-{{@index}}"
+                       value="{{this}}"
+                       /> <!-- {{@../index}}-{{@index}} gives index of id or the problem and index of choice
+                       value="{{this}}" -->
+                <label for="mcq-question-{{@../index}}-{{@index}}">{{this}}</label>
+                {{/each}}
+            </fieldset>
+        </div>
+        {{/each}}
+    </script>
+    <script id="shortAnswer-template" type="text/x-handlebars-template">
+        {{#each SA}}
+        <div class="ui-body ui-body-a ui-corner-all quiz-question-box">
+            <h3 class="questionName">Question&nbsp;<span class="questionNumber"></span></h3> <!-- left empty because this code is elsewhere -->
+            <p class="questionString">{{text}}</p>
+            <input type="text" title="Type your answer" name="sa-question-{{@index}}" id="sa-question-{{@index}}" value="">
+        </div>
+        {{/each}}
+    </script>
+    <script id="rightAnswer-template" type="text/x-handlebars-template">
+        <div class="ui-body ui-body-a ui-corner-all quiz-question-box">
+            <h3 class="questionName">Question&nbsp;<span class="questionNumber"></span></h3>
+            <p>Question: <span class="questionString">{{text}}</span></p>
+            <p>You answered: <span class="right_answer_value">{{correct_answer}}</span></p>
+            <p class="right_answer_message">YAAAY! You answered it correctly. </p>
+        </div>
+    </script>
+    <script id="wrongAnswer-template" type="text/x-handlebars-template">
+        <div class="ui-body ui-body-a ui-corner-all quiz-question-box">
+            <h3 class="questionName">Question&nbsp;<span class="questionNumber"></span></h3>
+            <p>Question: <span class="questionString">{{text}}</span></p>
+            <p>You answered: <span class="wrong_answer_value">{{user_answer}}</span></p>
+            <p>The Correct answer is: <span class="right_answer_value">{{correct_answer}}</span></p>
+            <p class="wrong_answer_message">OOPS! That was the wrong answer.</p>
+        </div>
+    </script>
+    <script id="noAnswer-template" type="text/x-handlebars-template">
+        <div class="ui-body ui-body-a ui-corner-all quiz-question-box">
+            <h3 class="questionName">Question&nbsp;<span class="questionNumber"></span></h3>
+            <p>Question: <span class="questionString">{{text}}</span></p>
+            <p>The Correct answer is: <span class="right_answer_value">{{correct_answer}}</span></p>
+            <p class="no_answer_message">Aww! You left this question unanswered.</p>
+        </div>
+    </script>
+    <script id="summaryOfResult-template" type="text/x-handlebars-template">
+        <div class="ui-body ui-body-a ui-corner-all quiz-question-box">
+            <h3 class="scores_name">Here we go.... Your Statistics!!!</h3>
+            <p>Right Answers: <span class="score_value">{{right_answers_count}}</span></p>
+            {{#if skipped_questions_count}}
+            <p>Skipped Questions: <span class="score_value">{{skipped_questions_count}}</span></p>
+            {{/if}}
+            <p>Wrong Answers: <span class="score_value">{{wrong_answers_count}}</span></p>
+            <p class="final_score">Final Score: <span class="score_value">{{right_answers_count}}/{{questions_count}}</span></p>
+        </div>
+    </script>
+</head>
+<body>
+<div data-role="page" id="quiz_page">
+    <header data-role="header">
+        <h1>Geography Quiz</h1>
+    </header>
+    <section role="main" class="ui-content">
+        <center><h2 class="ui-bar ui-bar-a ui-corner-all quiz-section-header">Are you READY!!!</h2></center>
+        <h2 class="ui-bar ui-bar-a ui-corner-all quiz-section-header">True/False Questions</h2>
+        <div class="tf-section"></div>
+        <h2 class="ui-bar ui-bar-a ui-corner-all quiz-section-header">Multiple Choice Questions</h2>
+        <div class="mcq-section"></div>
+        <h2 class="ui-bar ui-bar-a ui-corner-all quiz-section-header">Short Answer Questions</h2>
+        <div class="sa-section"></div>
+    </section>
+    <footer data-role="footer">
+        <div data-role="navbar" data-iconpos="left">
+            <ul>
+                <li><button id="clear_answers" data-transition="flip" data-icon="delete">Erase all answers</button></li>
+                <li><button id="save_answers" data-transition="slide" data-icon="shop">Save</button></li>
+                <li><button id="grade_answers" data-icon="star">Submit Quiz</button></li>
+            </ul>
+        </div>
+    </footer>
+</div>
+<div data-role="page" id="grading_page">
+    <header data-role="header" data-add-back-btn="true">
+        <h1>Results</h1>
+    </header>
+    <section role="main" class="ui-content">
+        <h2 class="ui-bar ui-bar-a ui-corner-all quiz-section-header">Quiz Results</h2>
+        <div class="grading-section"></div>
+        <h2 class="ui-bar ui-bar-a ui-corner-all quiz-section-header">Summary</h2>
+        <div class="summary-section"></div>
+    </section>
+    <footer data-role="footer">
+        <h3>Sheridan College 2018 by Wasif&trade; </h3>
+    </footer>
+</div>
+<div data-role="page" id="saved_dialog" data-dialog="true">
+    <header data-role="header"><h1>Saved</h1></header>
+    <div role="main" class="ui-content ui-body-a"><h3 class="ui-title">We just saved your answers to the local storage.</h3>
+        <p>Now you can come back and finish your quiz later</p>
+        <a href="#" class="ui-btn ui-corner-all ui-shadow" data-rel="back">Close</a></div></div>
+<div data-role="page" id="cleared_dialog" data-dialog="true">
+    <header data-role="header"><h1>Cleared</h1></header>
+    <div role="main" class="ui-content ui-body-a"><h3 class="ui-title">Your answers have been wiped clean</h3>
+        <p>Let's start over, Shall we?</p>
+        <a href="#" class="ui-btn ui-corner-all ui-shadow" data-rel="back">Sure</a></div></div>
+</body>
+</html>

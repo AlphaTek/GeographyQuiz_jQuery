@@ -1,0 +1,52 @@
+{
+  "TF":
+    [
+      {
+        "text":"Iceland is covered in ice ",
+        "answer":false
+      },
+      {
+        "text":"Sahara desert is the worlds biggest desert",
+        "answer":true
+      },
+      {
+        "text":"Greenland has several thousand cows grazing the fields",
+        "answer":false
+      },
+      {
+        "text":"Nile is the longest river in Africa",
+        "answer":true
+      }
+    ],
+  "MCQ":[
+    {
+      "text":"Capital city of Spain",
+      "choices": ["Barcelona","Madrid","Granada"],
+      "answer":"Madrid"
+    },
+    {
+      "text":"Which country is the largest in the world by surface area?",
+      "choices": ["Russia","Canada","China"],
+      "answer":"Russia"
+    },
+    {
+      "text":"World's biggest island",
+      "choices": ["Iceland","Greenland","Madagascar"],
+      "answer":"Greenland"
+    }
+  ],
+  "SA":[
+    {
+      "text":"Name the world's largest ocean",
+      "answer":"Pacific"
+    },
+    {
+      "text":"Name the world's highest mountain",
+      "answer":"Mount Everest"
+    },
+    {
+      "text":"Name the world's longest river",
+      "answer":"Amazon"
+    }
+  ]
+}
